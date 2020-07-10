@@ -5,20 +5,20 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.viewpager2.adapter.FragmentStateAdapter
-import com.chiiia12.bottomnavigationsample.databinding.FragmentMainBinding
+import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.FragmentStatePagerAdapter
+import com.chiiia12.bottomnavigationsample.databinding.FragmentViewPagerBinding
 
-class MainFragment : Fragment() {
-
+class ViewPagerFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        val binding = FragmentMainBinding.inflate(layoutInflater)
+        val binding = FragmentViewPagerBinding.inflate(layoutInflater)
         val param1 = arguments?.getString(ARG_PARAM_1) ?: ""
         binding.title.text = param1
-        val pagerAdapter = MainPagerAdapter(this, listOf("aaa", "bbb"))
+        val pagerAdapter = ViewPagerPagerAdapter(requireFragmentManager(), listOf("aaa", "bbb"))
         binding.viewPager.apply {
             adapter = pagerAdapter
         }
@@ -30,7 +30,7 @@ class MainFragment : Fragment() {
         private const val ARG_PARAM_1 = "ARG_PARAM_1"
 
         @JvmStatic
-        fun newInstance(param1: String) = MainFragment().apply {
+        fun newInstance(param1: String) = ViewPagerFragment().apply {
             arguments = Bundle().apply {
                 putString(ARG_PARAM_1, param1)
             }
@@ -38,22 +38,25 @@ class MainFragment : Fragment() {
     }
 }
 
-class MainPagerAdapter(
-    private val fragment: Fragment,
+class ViewPagerPagerAdapter(
+    private val fragmentManager: FragmentManager,
     private val textList: List<String>
-) : FragmentStateAdapter(fragment) {
-    override fun getItemCount(): Int = textList.size
+) : FragmentStatePagerAdapter(fragmentManager) {
 
-    override fun createFragment(position: Int): Fragment {
-        val fragment = fragment.childFragmentManager.findFragmentByTag(getFragmentTag(position))
+    private fun getFragmentTag(position: Int): String {
+        return "android:switcher:" + R.id.viewPager + ":" + position
+    }
+
+    override fun getItem(position: Int): Fragment {
+        val fragment = fragmentManager.findFragmentByTag(getFragmentTag(position))
         if (fragment != null) {
             return fragment
         }
         return ChildFragment.newInstance(textList[position])
     }
 
-    private fun getFragmentTag(position: Int): String {
-        return "android:switcher:" + R.id.viewPager + ":" + position
+    override fun getCount(): Int {
+        return textList.size
     }
 
 }

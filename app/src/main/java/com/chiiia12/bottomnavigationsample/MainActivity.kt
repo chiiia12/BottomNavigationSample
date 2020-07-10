@@ -13,12 +13,25 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         binding.bottomNav.setOnNavigationItemSelectedListener {
-            supportFragmentManager.beginTransaction().apply {
-                replace(
-                    R.id.container,
-                    MainFragment.newInstance(it.title.toString())
-                )
-                commit()
+            when (it.itemId) {
+                R.id.menu1, R.id.menu2 -> {
+                    supportFragmentManager.beginTransaction().apply {
+                        replace(
+                            R.id.container,
+                            ViewPager2Fragment.newInstance(it.title.toString())
+                        )
+                        commit()
+                    }
+                }
+                else -> {
+                    supportFragmentManager.beginTransaction().apply {
+                        replace(
+                            R.id.container,
+                            ViewPagerFragment.newInstance(it.title.toString())
+                        )
+                        commit()
+                    }
+                }
             }
             true
         }
